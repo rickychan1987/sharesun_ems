@@ -1,0 +1,47 @@
+# Virtual environment
+venv/
+.env/
+.venv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Byte-compiled / optimized / DLL files
+*.pyd
+*.pyo
+*.so
+
+# IDE/editor specific files
+.vscode/
+.idea/
+*.swp
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+
+# Logs and debug files
+*.log
+
+# Test & coverage reports
+htmlcov/
+.tox/
+.nox/
+coverage.xml
+.pytest_cache/
+
+# macOS system files
+.DS_Store
+
+# Local environment variables
+*.env
+.env.* 
+
+# SQLite or test DBs
+*.db
+
+# alembic cache
+alembic.ini~

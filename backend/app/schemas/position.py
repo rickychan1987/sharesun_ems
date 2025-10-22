@@ -1,0 +1,18 @@
+from pydantic import BaseModel
+
+class PositionBase(BaseModel):
+    title: str
+    description: str = None
+
+class PositionCreate(PositionBase):
+    pass
+
+class PositionUpdate(BaseModel):
+    title: str = None
+    description: str = None
+
+class Position(PositionBase):
+    id: int
+
+    class Config:
+        orm_mode = True
