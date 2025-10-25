@@ -2,16 +2,17 @@ from pydantic import BaseModel
 from datetime import date
 
 class LeaveBase(BaseModel):
-    employee_id: int
+    employee_name: str
     start_date: date
     end_date: date
     reason: str = None
-    status: str = "pending"  # allowed: pending, approved, rejected
+    status: str = "pending"
 
 class LeaveCreate(LeaveBase):
     pass
 
 class LeaveUpdate(BaseModel):
+    employee_name: str = None
     start_date: date = None
     end_date: date = None
     reason: str = None

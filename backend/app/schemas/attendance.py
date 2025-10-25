@@ -9,11 +9,6 @@ class AttendanceBase(BaseModel):
 class AttendanceCreate(AttendanceBase):
     pass
 
-class AttendanceUpdate(BaseModel):
-    employee_id: int = None
-    check_in: datetime = None
-    check_out: datetime = None
-
 class Attendance(AttendanceBase):
     id: int
 

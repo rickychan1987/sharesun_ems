@@ -1,6 +1,7 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from app.db.session import SessionLocal
+<<<<<<< HEAD
 from app.schemas.employee import EmployeeCreate, EmployeeUpdate, Employee
 from app.crud.employee import (
     create_employee,
@@ -9,6 +10,10 @@ from app.crud.employee import (
     update_employee,
     delete_employee
 )
+=======
+from app.schemas.employee import EmployeeCreate, Employee
+from app.crud.employee import create_employee
+>>>>>>> 65b951c9a3d18676f7316128c79c9f99fdee6861
 
 router = APIRouter()
 
@@ -20,6 +25,7 @@ def get_db():
         db.close()
 
 @router.post("/", response_model=Employee)
+<<<<<<< HEAD
 def add_employee(emp: EmployeeCreate, db: Session = Depends(get_db)):
     return create_employee(db, emp)
 
@@ -47,3 +53,7 @@ def delete_employee_route(employee_id: int, db: Session = Depends(get_db)):
     if not deleted:
         raise HTTPException(status_code=404, detail="Employee not found")
     return deleted
+=======
+def add_employee(employee: EmployeeCreate, db: Session = Depends(get_db)):
+    return create_employee(db, employee)
+>>>>>>> 65b951c9a3d18676f7316128c79c9f99fdee6861
