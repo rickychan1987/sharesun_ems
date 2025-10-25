@@ -1,15 +1,16 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
+from typing import Optional
 
 class PositionBase(BaseModel):
     title: str
-    description: str = None
+    description: Optional[str] = Field(None, description="Position description")
 
 class PositionCreate(PositionBase):
     pass
 
 class PositionUpdate(BaseModel):
-    title: str = None
-    description: str = None
+    title: Optional[str] = None
+    description: Optional[str] = Field(None, description="Position description")
 
 class Position(PositionBase):
     id: int

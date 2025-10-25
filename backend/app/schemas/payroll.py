@@ -2,7 +2,7 @@ from pydantic import BaseModel
 from datetime import date
 
 class PayrollBase(BaseModel):
-    employee_id: int
+    employee_name: str
     base_salary: float
     bonus: float = 0.0
     deductions: float = 0.0
@@ -13,6 +13,7 @@ class PayrollCreate(PayrollBase):
     pass
 
 class PayrollUpdate(BaseModel):
+    employee_name: str = None
     base_salary: float = None
     bonus: float = None
     deductions: float = None

@@ -12,5 +12,4 @@ class Review(Base):
     date = Column(Date, nullable=False)
     notes = Column(String, nullable=True)
 
-    employee = relationship("Employee", foreign_keys=[employee_id])
-    reviewer = relationship("Employee", foreign_keys=[reviewer_id])
+
