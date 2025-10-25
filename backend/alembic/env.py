@@ -10,16 +10,7 @@ from alembic import context
 #alembic revision --autogenerate -m "[your message]"
 #alembic upgrade head
 #alembic downgrade -1
-# from app.models.employee import employee, department, position, attendance, leave, payroll, review, announcement,user
-from app.models.user import User
-from app.models.employee import Employee
-from app.models.department import Department
-from app.models.position import Position
-from app.models.attendance import Attendance
-from app.models.leave import Leave
-from app.models.payroll import Payroll
-from app.models.review import Review
-from app.models.announcement import Announcement
+from app.models import employee, department, position, attendance, leave, payroll, review, announcement
 from app.db.base import Base
 
 # this is the Alembic Config object, which provides

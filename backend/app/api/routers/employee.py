@@ -9,7 +9,6 @@ from app.crud.employee import (
     update_employee,
     delete_employee
 )
-from app.core.deps import get_current_active_user, require_admin_or_manager
 
 router = APIRouter()
 
@@ -20,13 +19,12 @@ def get_db():
     finally:
         db.close()
 
-# Update your existing routes to include authentication
 @router.post("/", response_model=Employee)
-def add_employee(emp: EmployeeCreate, db: Session = Depends(get_db), current_user = Depends(require_admin_or_manager)):
+def add_employee(emp: EmployeeCreate, db: Session = Depends(get_db)):
     return create_employee(db, emp)
 
 @router.get("/", response_model=list[Employee])
-def list_employees(db: Session = Depends(get_db), current_user = Depends(get_current_active_user)):
+def list_employees(db: Session = Depends(get_db)):
     return get_employees(db)
 
 @router.get("/{employee_id}", response_model=Employee)
@@ -37,7 +35,7 @@ def get_employee(employee_id: int, db: Session = Depends(get_db)):
     return db_emp
 
 @router.put("/{employee_id}", response_model=Employee)
-def update_employee_route(employee_id: int, emp_update: EmployeeUpdate, db: Session = Depends(get_db), current_user = Depends(require_admin_or_manager)):
+def update_employee_route(employee_id: int, emp_update: EmployeeUpdate, db: Session = Depends(get_db)):
     updated = update_employee(db, employee_id, emp_update)
     if not updated:
         raise HTTPException(status_code=404, detail="Employee not found")
