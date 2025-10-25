@@ -246,7 +246,7 @@ python test_data.py
 Now you know exactly the order to create data in FastAPI UI! Start with Departments and Positions, then Employees, then everything else.
 
 
-####---Alembic run and update database if needed---###
+# ---Alembic run and update database if needed
 # Create a new migration
 alembic revision --autogenerate -m "description of changes"
 
@@ -255,3 +255,52 @@ alembic upgrade head
 
 # Rollback if needed
 alembic downgrade -1
+
+# Secrects Key Command 
+openssl rand -hex 32
+python3 -c "import secrets; print(secrets.token_hex(32))"
+
+# Credential return 404 message you will do below step to fix the error 
+Step 1: Verify Router Registration in app/main.py:
+Make sure you've registered the auth router in your main application file:
+# app/main.py
+from fastapi import FastAPI
+from app.api.routers import auth, employee, department, attendance, leave, payroll, review, announcement
+
+app = FastAPI(title="EMS API", version="1.0.0")
+
+Register all routers
+app.include_router(auth.router, prefix="/auth", tags=["authentication"])
+app.include_router(employee.router, prefix="/employees", tags=["employees"])
+app.include_router(department.router, prefix="/departments", tags=["departments"])
+app.include_router(attendance.router, prefix="/attendances", tags=["attendances"])
+app.include_router(leave.router, prefix="/leaves", tags=["leaves"])
+app.include_router(payroll.router, prefix="/payrolls", tags=["payrolls"])
+app.include_router(review.router, prefix="/reviews", tags=["reviews"])
+app.include_router(announcement.router, prefix="/announcements", tags=["announcements"])
+
+@app.get("/")
+def root():
+    return {"message": "Welcome to EMS API"}
+
+
+# Reset Database Command:
+# Drop all tables
+psql -U your_postgres_user -d your_database_name << EOF
+DROP TABLE IF EXISTS announcements CASCADE;
+DROP TABLE IF EXISTS reviews CASCADE;
+DROP TABLE IF EXISTS payrolls CASCADE;
+DROP TABLE IF EXISTS leaves CASCADE;
+DROP TABLE IF EXISTS attendances CASCADE;
+DROP TABLE IF EXISTS employees CASCADE;
+DROP TABLE IF EXISTS users CASCADE;
+DROP TABLE IF EXISTS departments CASCADE;
+DROP TABLE IF EXISTS alembic_version CASCADE;
+EOF
+
+# Create fresh migration
+alembic revision --autogenerate -m "Update employee and department to use strings"
+
+# Apply migration
+alembic upgrade head
+

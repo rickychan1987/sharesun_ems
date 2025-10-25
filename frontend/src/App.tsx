@@ -28,6 +28,7 @@ import ReviewList from './pages/reviews/ReviewList';
 import ReviewForm from './pages/reviews/ReviewForm';
 import AnnouncementList from './pages/announcements/AnnouncementList';
 import AnnouncementForm from './pages/announcements/AnnouncementForm';
+import EmployeeDetail from './pages/employees/EmployeeDetail';
 
 const queryClient = new QueryClient();
 
@@ -127,6 +128,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route path="/" element={<EmployeeList />} />
 
             {/* Department Routes */}
             <Route

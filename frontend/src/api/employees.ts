@@ -52,7 +52,35 @@ export interface EmployeeUpdate {
   dateofbirth?: string;
 }
 
+// Pagination response interface
+export interface PaginatedResponse<T> {
+  items: T[];
+  total: number;
+  page: number;
+  size: number;
+  pages: number;
+}
+
+export interface EmployeeSearchParams {
+  page?: number;
+  size?: number;
+  search?: string;
+}
+
 export const employeeApi = {
+  // Get all employees - extract items from paginated response
+  getAll: async (): Promise<Employee[]> => {
+    const response = await apiClient.get<PaginatedResponse<Employee>>('/employees/');
+    // Return the items array from the paginated response
+    return response.data.items;
+  },
+
+  // Get employee by ID
+  getById: async (id: number): Promise<Employee> => {
+    const response = await apiClient.get<Employee>(`/employees/${id}`);
+    return response.data;
+  },
+
   // Create employee with optional photo
   create: async (data: EmployeeCreate, photoFile?: File): Promise<Employee> => {
     const formData = new FormData();
@@ -80,8 +108,6 @@ export const employeeApi = {
       formData.append('photo', photoFile);
     }
     
-    console.log('Updating employee:', id, data); // Debug log
-    
     const response = await apiClient.put<Employee>(`/employees/${id}`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
@@ -91,30 +117,17 @@ export const employeeApi = {
     return response.data;
   },
 
-  // Get employee by ID
-  getById: async (id: number): Promise<Employee> => {
-    const response = await apiClient.get<Employee>(`/employees/${id}`);
-    return response.data;
-  },
-
-  // Get all employees
-  getAll: async (skip: number = 0, limit: number = 100): Promise<Employee[]> => {
-    const response = await apiClient.get<Employee[]>('/employees/', {
-      params: { skip, limit }
-    });
-    return response.data;
-  },
-
   // Delete employee
   delete: async (id: number): Promise<void> => {
     await apiClient.delete(`/employees/${id}`);
   },
 
-  // Search employees
+  // Search employees - extract items from paginated response
   search: async (query: string): Promise<Employee[]> => {
-    const response = await apiClient.get<Employee[]>('/employees/search/', {
+    const response = await apiClient.get<PaginatedResponse<Employee>>('/employees/search/', {
       params: { q: query }
     });
-    return response.data;
+    // Return the items array from the paginated response
+    return response.data.items;
   }
 };

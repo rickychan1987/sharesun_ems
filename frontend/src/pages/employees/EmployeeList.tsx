@@ -54,38 +54,24 @@ export default function EmployeeList() {
     try {
       setLoading(true);
       setError('');
-      console.log('Fetching employees and positions...');
       
-      const [empData, posData] = await Promise.all([
-        employeeApi.getAll(),
-        positionApi.getAll(),
-      ]);
+      // Get employees (now returns direct Employee[] array)
+      const empData = await employeeApi.getAll();
+      console.log('Employees data:', empData);
       
-      console.log('Raw employees data:', empData);
-      console.log('Raw positions data:', posData);
+      // Get positions (direct array)
+      const posData = await positionApi.getAll();
+      console.log('Positions data:', posData);
       
-      // Validate and set employees data
-      if (Array.isArray(empData)) {
-        setEmployees(empData);
-        console.log('Employees set successfully:', empData.length, 'employees');
-      } else {
-        console.error('Invalid employees data format:', empData);
-        setError('Invalid data received from server');
-        setEmployees([]);
-      }
+      setEmployees(empData);
       
-      // Create a map of position id to title for quick lookup
+      // Create position map
       const positionMap: { [key: number]: string } = {};
-      if (Array.isArray(posData)) {
-        posData.forEach((pos: Position) => {
-          positionMap[pos.id] = pos.title;
-        });
-        setPositions(positionMap);
-        console.log('Position map created:', positionMap);
-      } else {
-        console.error('Invalid positions data format:', posData);
-        setError('Failed to load positions');
-      }
+      posData.forEach((pos: Position) => {
+        positionMap[pos.id] = pos.title;
+      });
+      setPositions(positionMap);
+      
     } catch (error) {
       console.error('Failed to fetch data:', error);
       setError('Failed to load employees data');
@@ -104,15 +90,29 @@ export default function EmployeeList() {
     try {
       setLoading(true);
       setError('');
-      // Use the search endpoint properly
-      const query = searchEmployeeId || searchName;
-      const data = await employeeApi.search(query);
       
-      if (Array.isArray(data)) {
-        setEmployees(data);
+      // Use search endpoint or filter locally
+      const searchTerm = searchEmployeeId || searchName;
+      let filteredEmployees: Employee[];
+      
+      if (searchTerm) {
+        try {
+          // Use API search (now returns Employee[] directly)
+          filteredEmployees = await employeeApi.search(searchTerm);
+        } catch (searchError) {
+          console.log('Search API not available, filtering locally');
+          // Fallback to local filtering
+          const allEmployees = await employeeApi.getAll();
+          filteredEmployees = allEmployees.filter(emp =>
+            emp.employeeid.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            emp.name.toLowerCase().includes(searchTerm.toLowerCase())
+          );
+        }
       } else {
-        setEmployees([]);
+        filteredEmployees = await employeeApi.getAll();
       }
+      
+      setEmployees(filteredEmployees);
     } catch (error) {
       console.error('Failed to search employees:', error);
       setError('Failed to search employees');
@@ -151,22 +151,17 @@ export default function EmployeeList() {
     }
   };
 
-  // Refresh the list when navigating back to this page
-  useEffect(() => {
-    const handleFocus = () => {
-      fetchEmployeesAndPositions();
-    };
-
-    window.addEventListener('focus', handleFocus);
-    return () => {
-      window.removeEventListener('focus', handleFocus);
-    };
-  }, []);
-
-  if (loading && employees.length === 0) return <LoadingSpinner />;
+  if (loading && employees.length === 0) {
+    return (
+      <Box sx={{ p: 3 }}>
+        <Typography variant="h4">Employees</Typography>
+        <LoadingSpinner />
+      </Box>
+    );
+  }
 
   return (
-    <Box>
+    <Box sx={{ p: 3 }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
         <Typography variant="h4">Employees</Typography>
         <Button
@@ -238,7 +233,7 @@ export default function EmployeeList() {
 
       {/* Results Info */}
       <Typography variant="body2" sx={{ mb: 2, color: 'text.secondary' }}>
-        {loading ? 'Loading...' : `Showing ${employees.length} employee(s)`}
+        Showing {employees.length} employee(s)
       </Typography>
 
       {/* Employee Table */}
